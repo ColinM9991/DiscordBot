@@ -2,15 +2,15 @@ from discord.ext import commands
 from helpers.roles import DiscordRoles
 
 
-class DcsMissionCog(commands.Cog):
+class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
     weatherPresets = ['Preset{0}'.format(num) for num in range(1, 28)]
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(help="Sets the clouds preset for the mission")
     @commands.has_role(DiscordRoles.DCSServerAdministrator)
-    async def set_weather_preset(self, ctx, *, preset):
+    async def set_clouds_preset(self, ctx, *, preset):
         if not preset:
             await ctx.send("Invalid preset specified")
             return
