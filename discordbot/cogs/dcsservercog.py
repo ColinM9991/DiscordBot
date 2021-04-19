@@ -1,6 +1,5 @@
 from discord.ext import commands
 from helpers.dcsserver import ConcreteDcsServer
-from helpers import DiscordRoles
 
 
 class DcsServerCog(commands.Cog, name="DCS Server Commands"):
