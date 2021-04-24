@@ -1,18 +1,18 @@
 import requests
 
-from helpers.weatherservice import WeatherService
+from weather import WeatherService
 
 
 class OpenMapWeatherService(WeatherService):
-    def __init__(self, openweathermapurl, openweathermapapikey):
-        self.openweathermapurl = openweathermapurl
-        self.openweathermapapikey = openweathermapapikey
+    def __init__(self, open_weather_map_url, open_weather_map_api_key):
+        self.open_weather_map_url = open_weather_map_url
+        self.open_weather_map_api_key = open_weather_map_api_key
 
     def get_weather_by_city(self, city):
         """ Gets the weather for the specified city. """
-        response = requests.get(self.openweathermapurl, params={
+        response = requests.get(self.open_weather_map_url, params={
             'q': city,
-            'appid': self.openweathermapapikey
+            'appid': self.open_weather_map_api_key
         })
 
         if response.status_code == 404:

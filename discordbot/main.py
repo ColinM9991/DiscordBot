@@ -1,11 +1,12 @@
-from DiscordBot import DiscordBot
-from os import environ, listdir, path
+import os
 
-discord_secret = environ.get('DISCORD_BOT_API')
+from discord.ext.commands import Bot
 
-discord_bot = DiscordBot('!')
+discord_secret = os.environ.get('DISCORD_BOT_API')
 
-for fileName in [".".join(f.split(".")[:-1]) for f in listdir('cogs') if path.isfile(path.join('cogs', f))]:
+discord_bot = Bot(command_prefix='!')
+
+for fileName in [".".join(f.split(".")[:-1]) for f in os.listdir('cogs') if os.path.isfile(os.path.join('cogs', f))]:
     print('Loading cog {0}'.format(fileName))
     discord_bot.load_extension('cogs.{0}'.format(fileName))
 

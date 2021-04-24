@@ -1,12 +1,8 @@
 from discord.ext import commands
 from os import environ
 
-from helpers import OpenMapWeatherService,\
-    CityNotFoundError,\
-    DcsWeatherMapper,\
-    WeatherService, \
-    MultiInstanceDcsServer,\
-    DcsMissionEditor
+from helpers import DcsServerRepository, DcsMissionEditor
+from weather import DcsWeatherMapper, WeatherService, CityNotFoundError, OpenMapWeatherService
 
 
 class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
@@ -14,16 +10,16 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
                  bot,
                  weather_service: WeatherService,
                  dcs_weather_mapper: DcsWeatherMapper,
-                 dcs_server: MultiInstanceDcsServer):
+                 dcs_server: DcsServerRepository):
         self.bot = bot
         self.weather_service: WeatherService = weather_service
         self.dcs_weather_mapper: DcsWeatherMapper = dcs_weather_mapper
-        self.dcs_server: MultiInstanceDcsServer = dcs_server
+        self.dcs_server: DcsServerRepository = dcs_server
 
-    @commands.command(help="Sets the weather to that of the specified city.")
+    @commands.command(help="Sets the weather to that of a specified city.")
     async def set_weather(self, ctx, instance_name, *, city):
         if instance_name is None:
-            await ctx.send('Instance name not specified.')
+            await ctx.send('Command syntax: !set_weather <instance> <city>')
             return
 
         instance = self.dcs_server.get_instance(instance_name)
@@ -41,6 +37,8 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
         dcs_weather = self.dcs_weather_mapper.map(weather)
 
+        await ctx.send('Updating weather for the mission')
+
         dcs_mission = DcsMissionEditor(mission)
         weather_result = dcs_mission.set_weather(dcs_weather)
 
@@ -57,6 +55,6 @@ def setup(bot):
                                   environ.get('DISCORD_OPEN_WEATHER_MAP_URL'),
                                   environ.get('DISCORD_OPEN_WEATHER_MAP_API_KEY')),
                               DcsWeatherMapper(),
-                              MultiInstanceDcsServer(
+                              DcsServerRepository(
                                   environ.get('DCS_PROFILE_PATH'),
                                   environ.get('FIREDAEMON_CONFIG_PATH'))))
