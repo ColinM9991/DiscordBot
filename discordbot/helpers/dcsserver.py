@@ -13,7 +13,7 @@ class DcsServer:
 
     @property
     def get_instance_name(self) -> str:
-        self.instance_name
+        return self.instance_name
 
     @property
     def get_service_name(self) -> str:
