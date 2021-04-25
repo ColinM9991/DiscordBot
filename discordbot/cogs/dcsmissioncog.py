@@ -51,6 +51,7 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
             .set_thumbnail(url=f'http://openweathermap.org/img/w/{dcs_weather["status"]["icon"]}.png')\
             .add_field(name='Date', value=weather_result.time)\
             .add_field(name='Clouds', value=weather_result.preset_name)\
+            .add_field(name='Clouds Base', value='{:,}ft'.format(weather_result.cloud_base))\
             .add_field(name='Temperature', value=f'{weather_result.temperature}°C')\
             .add_field(name='Pressure', value=weather_result.pressure)\
 
