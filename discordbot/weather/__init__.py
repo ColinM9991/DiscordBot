@@ -1,4 +1,3 @@
 from .dcsweathermapper import DcsWeatherMapper
 from .openmapweatherservice import OpenMapWeatherService
 from .openmapweatherservice import OpenWeatherMapError, CityNotFoundError
-from .weatherservice import WeatherService

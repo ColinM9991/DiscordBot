@@ -1,19 +1,19 @@
 from discord.ext import commands
-from os import environ
 
 from helpers import DcsServerRepository, DcsMissionEditor
-from weather import DcsWeatherMapper, WeatherService, CityNotFoundError, OpenMapWeatherService
+from helpers.services import dcs_server_repository, dcs_weather_mapper, open_weather_map_service
+from weather import DcsWeatherMapper, CityNotFoundError, OpenMapWeatherService
 
 
 class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
     def __init__(self,
                  bot,
-                 weather_service: WeatherService,
-                 dcs_weather_mapper: DcsWeatherMapper,
+                 weather_service: OpenMapWeatherService,
+                 weather_mapper: DcsWeatherMapper,
                  dcs_server: DcsServerRepository):
         self.bot = bot
-        self.weather_service: WeatherService = weather_service
-        self.dcs_weather_mapper: DcsWeatherMapper = dcs_weather_mapper
+        self.weather_service: OpenMapWeatherService = weather_service
+        self.dcs_weather_mapper: DcsWeatherMapper = weather_mapper
         self.dcs_server: DcsServerRepository = dcs_server
 
     @commands.command(help="Sets the weather to that of a specified city.")
@@ -51,10 +51,6 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
 def setup(bot):
     bot.add_cog(DcsMissionCog(bot,
-                              OpenMapWeatherService(
-                                  environ.get('DISCORD_OPEN_WEATHER_MAP_URL'),
-                                  environ.get('DISCORD_OPEN_WEATHER_MAP_API_KEY')),
-                              DcsWeatherMapper(),
-                              DcsServerRepository(
-                                  environ.get('DCS_PROFILE_PATH'),
-                                  environ.get('FIREDAEMON_CONFIG_PATH'))))
+                              open_weather_map_service,
+                              dcs_weather_mapper,
+                              dcs_server_repository))

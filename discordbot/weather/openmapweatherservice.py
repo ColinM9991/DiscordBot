@@ -1,9 +1,7 @@
 import requests
 
-from weather import WeatherService
 
-
-class OpenMapWeatherService(WeatherService):
+class OpenMapWeatherService:
     def __init__(self, open_weather_map_url, open_weather_map_api_key):
         self.open_weather_map_url = open_weather_map_url
         self.open_weather_map_api_key = open_weather_map_api_key
