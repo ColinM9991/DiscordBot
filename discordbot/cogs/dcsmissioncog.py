@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from helpers import DcsServerRepository, DcsMissionEditor
@@ -46,7 +47,7 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
         dcs_mission.save()
         instance.start()
 
-        await ctx.send(f'Weather set to {weather_result.preset_name} with a pressure of {weather_result.pressure}')
+        await ctx.send(f'Weather set to {weather_result.time}, Clouds: {weather_result.preset_name} with a pressure of {weather_result.pressure}', embed=embed)
 
 
 def setup(bot):

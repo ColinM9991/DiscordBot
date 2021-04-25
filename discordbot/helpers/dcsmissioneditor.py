@@ -3,6 +3,8 @@ import numpy
 from dcs.cloud_presets import Clouds
 from dcs.weather import CloudPreset, Wind
 
+from helpers.units import Units
+
 
 class DcsMissionEditor:
     def __init__(self, mission_file):
@@ -55,16 +57,17 @@ class DcsMissionEditor:
         speed = weather['wind']['speed']
         direction = weather['wind']['direction']
 
-        self.mission.weather.wind_at_8000.direction = Wind((direction * numpy.random.normal(1, 0.1) + 180) % 360,
-                                                           speed * numpy.random.normal(1.2, 0.1))
+        self.mission.weather.wind_at_8000 = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
+                                                 round(speed * numpy.random.normal(1.2, 0.1)))
 
-        self.mission.weather.wind_at_2000.direction = Wind((direction * numpy.random.normal(1, 0.1) + 180) % 360,
-                                                           speed * numpy.random.normal(1.1, 0.1))
+        self.mission.weather.wind_at_2000 = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
+                                                 round(speed * numpy.random.normal(1.1, 0.1)))
 
-        self.mission.weather.wind_at_ground = Wind((direction * numpy.random.normal(1, 0.1) + 180) % 360,
-                                                   speed * numpy.random.normal(1, 0.1))
+        self.mission.weather.wind_at_ground = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
+                                                   round(speed * numpy.random.normal(1, 0.1)))
 
-        self.mission.weather.qnh = int((weather['pressure'] * 0.02953))
+        # hPa to mmHG conversion
+        self.mission.weather.qnh = round(weather['pressure'] * Units.hPa_to_mmHg)
 
         self.mission.weather.fog_visibility = weather['visibility']
 
@@ -74,7 +77,9 @@ class DcsMissionEditor:
 
         self.mission.start_time = weather['time']
 
-        return WeatherResult(cloud_preset.ui_name, self.mission.weather.qnh)
+        return WeatherResult(self.mission.start_time,
+                             cloud_preset.ui_name,
+                             self.mission.weather.qnh)
 
     def get_cloud_preset(self, weather_status) -> CloudPreset:
         if weather_status in self.cloud_mappings:
@@ -87,11 +92,15 @@ class DcsMissionEditor:
 
 
 class WeatherResult:
+    time: str
     preset_name: str
-    pressure: int
+    pressure: str
 
     def __init__(self,
+                 time,
                  preset_name: str,
                  pressure: int):
+        self.time = time.strftime('%c')
         self.preset_name = preset_name
-        self.pressure = pressure
+        # mmHg to inHg
+        self.pressure = "{:.2f}inHg".format(pressure * Units.mmHg_to_inHg)
