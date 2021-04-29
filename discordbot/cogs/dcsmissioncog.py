@@ -47,7 +47,7 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
         dcs_mission.save()
         instance.start()
 
-        embed = discord.Embed(name='Mission Weather', description='Mission Weather Updated')\
+        embed = discord.Embed(title='Mission Weather Updated')\
             .set_thumbnail(url=f'http://openweathermap.org/img/w/{dcs_weather["status"]["icon"]}.png')\
             .add_field(name='Date', value=weather_result.time)\
             .add_field(name='Clouds', value=weather_result.preset_name)\
