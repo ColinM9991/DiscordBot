@@ -82,7 +82,10 @@ class DcsMissionEditor:
                              cloud_preset.ui_name,
                              self.mission.weather.season_temperature,
                              cloud_base,
-                             pressure.to_inch_of_mercury())
+                             pressure.to_inch_of_mercury(),
+                             self.mission.weather.wind_at_ground,
+                             self.mission.weather.wind_at_2000,
+                             self.mission.weather.wind_at_8000)
 
     def get_cloud_preset(self, weather: WeatherResponse) -> (CloudPreset, int):
         def get_random_preset() -> (CloudPreset, int):
