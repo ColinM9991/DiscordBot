@@ -2,19 +2,17 @@ import discord
 from discord.ext import commands
 
 from helpers import DcsServerRepository, DcsMissionEditor
-from helpers.services import dcs_server_repository, dcs_weather_mapper, open_weather_map_service
-from weather import DcsWeatherMapper, CityNotFoundError, OpenMapWeatherService
+from helpers.services import dcs_server_repository, open_weather_map_service
+from weather import CityNotFoundError, OpenMapWeatherService
 
 
 class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
     def __init__(self,
                  bot,
                  weather_service: OpenMapWeatherService,
-                 weather_mapper: DcsWeatherMapper,
                  dcs_server: DcsServerRepository):
         self.bot = bot
         self.weather_service: OpenMapWeatherService = weather_service
-        self.dcs_weather_mapper: DcsWeatherMapper = weather_mapper
         self.dcs_server: DcsServerRepository = dcs_server
 
     @commands.command(help="Sets the weather to that of a specified city.")
@@ -36,24 +34,22 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
             await ctx.send(f'"{city}" is not a valid city')
             return
 
-        dcs_weather = self.dcs_weather_mapper.map(weather)
-
         await ctx.send('Updating weather for the mission')
 
         dcs_mission = DcsMissionEditor(mission)
-        weather_result = dcs_mission.set_weather(dcs_weather)
+        weather_result = dcs_mission.set_weather(weather)
 
         instance.stop()
         dcs_mission.save()
         instance.start()
 
         embed = discord.Embed(title='Mission Weather Updated')\
-            .set_thumbnail(url=f'http://openweathermap.org/img/w/{dcs_weather["status"]["icon"]}.png')\
+            .set_thumbnail(url=f'http://openweathermap.org/img/w/{weather.info.icon}.png')\
             .add_field(name='Date', value=weather_result.time)\
             .add_field(name='Clouds', value=weather_result.preset_name)\
             .add_field(name='Clouds Base', value='{:,}ft'.format(weather_result.cloud_base))\
             .add_field(name='Temperature', value=f'{weather_result.temperature}°C')\
-            .add_field(name='Pressure', value=weather_result.pressure)\
+            .add_field(name='Pressure', value="{:.2f}inHg".format(weather_result.pressure.value))\
 
         await ctx.send(embed=embed)
 
@@ -61,5 +57,4 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 def setup(bot):
     bot.add_cog(DcsMissionCog(bot,
                               open_weather_map_service,
-                              dcs_weather_mapper,
                               dcs_server_repository))
