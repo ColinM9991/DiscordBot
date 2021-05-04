@@ -8,6 +8,7 @@ idna==2.10
 multidict==5.1.0
 numpy==1.20.2
 psutil==5.8.0
+-e git+https://github.com/pydcs/dcs.git@a8d1153ace2f71f369b8afdb2ca2f045f3fa388e#egg=pydcs
 requests==2.25.1
 six==1.15.0
 SLPP==1.2.3
