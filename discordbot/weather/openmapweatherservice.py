@@ -31,7 +31,8 @@ class OpenMapWeatherService:
             weather_api_response['weather'][0]['main'],
             weather_api_response['weather'][0]['description'],
             weather_api_response['weather'][0]['icon'],
-            (datetime.datetime.utcnow() + datetime.timedelta(seconds=weather_api_response['timezone'])),
+            (datetime.datetime.utcnow() +
+             datetime.timedelta(seconds=weather_api_response['timezone'])),
             weather_api_response['visibility'],
             weather_api_response['wind']['speed'],
             weather_api_response['wind']['deg'],

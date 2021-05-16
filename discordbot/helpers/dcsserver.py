@@ -33,12 +33,14 @@ class DcsServer:
                                          self.get_service_name,
                                          '--pid'],
                                         stdout=subprocess.PIPE)
-        pid_match = re.search('App PID: ([0-9]+)', str(active_service.stdout)).group(1)
+        pid_match = re.search(
+            'App PID: ([0-9]+)', str(active_service.stdout)).group(1)
 
         return int(pid_match)
 
     def get_mission(self) -> str:
-        files = [os.path.join(self.missions_path, file) for file in os.listdir(self.missions_path) if file.endswith('.miz')]
+        files = [os.path.join(self.missions_path, file) for file in os.listdir(
+            self.missions_path) if file.endswith('.miz')]
 
         # A server must have only one mission file
         if len(files) < 1:
@@ -72,5 +74,3 @@ class DcsServer:
 
     def start(self):
         subprocess.call(['firedaemon', '--start', self.service_name])
-
-

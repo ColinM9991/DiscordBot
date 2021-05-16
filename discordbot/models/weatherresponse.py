@@ -51,7 +51,8 @@ class WeatherResponse:
             temperature = self.temperature
             alpha = 243.12
             beta = 17.62
-            gamma = ((beta * temperature) / (alpha + temperature)) + numpy.log(humidity / 100)
+            gamma = ((beta * temperature) / (alpha + temperature)) + \
+                numpy.log(humidity / 100)
             ans = (alpha * gamma) / (beta - gamma)
             spread = temperature - ans
             return round((spread / 2.5) * 1000)
