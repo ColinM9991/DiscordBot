@@ -16,7 +16,6 @@ class DcsServer:
         self.instance_name: str = instance_name
         self.profile_path: str = instance_path
         self.service_name: str = service_name
-        self.missions_path: str = os.path.join(instance_path, 'Missions')
         self.config_path: str = os.path.join(instance_path, 'Config')
 
     @property
@@ -39,24 +38,15 @@ class DcsServer:
         return int(pid_match)
 
     def get_mission(self) -> str:
-        files = [os.path.join(self.missions_path, file) for file in os.listdir(
-            self.missions_path) if file.endswith('.miz')]
+        server_settings = self.get_server_settings()
+        list_start_index = server_settings['listStartIndex']
 
-        # A server must have only one mission file
-        if len(files) < 1:
-            raise ValueError('No missions found.')
-        elif len(files) > 1:
-            raise ValueError('Too many missions.')
+        mission = server_settings['missionList'][list_start_index]
 
-        return files[0]
+        return mission
 
     def get_server_info(self) -> DcsServerInfo:
-        server_settings = os.path.join(self.config_path, 'serverSettings.lua')
-        with open(server_settings) as settings_file:
-            file_contents = settings_file.read()
-            server_settings_dict = lua.decode(f'{{{file_contents}}}')
-
-        config_dict = server_settings_dict['cfg']
+        config_dict = self.get_server_settings()
 
         return DcsServerInfo(config_dict['name'],
                              config_dict['password'],
@@ -68,6 +58,15 @@ class DcsServer:
         process_id = self.get_process_id()
 
         return process_id in (p.pid for p in psutil.process_iter())
+
+    def get_server_settings(self):
+        server_settings = os.path.join(self.config_path, 'serverSettings.lua')
+        with open(server_settings) as settings_file:
+            file_contents = settings_file.read()
+            server_settings_dict = lua.decode(f'{{{file_contents}}}')
+
+        config_dict = server_settings_dict['cfg']
+        return config_dict
 
     def stop(self):
         subprocess.call(['firedaemon', '--stop', self.service_name])
