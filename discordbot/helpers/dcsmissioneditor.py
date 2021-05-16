@@ -1,10 +1,11 @@
+from typing import Tuple
 import dcs
 import numpy
 import random
 from dcs.cloud_presets import Clouds
 from dcs.weather import CloudPreset, Wind
 from models import WeatherResult, WeatherResponse
-from models.units import PressureUnit, Torr
+from models.units import Torr
 
 
 class DcsMissionEditor:
@@ -88,13 +89,19 @@ class DcsMissionEditor:
                              self.mission.weather.wind_at_2000,
                              self.mission.weather.wind_at_8000)
 
-    def get_cloud_preset(self, weather: WeatherResponse) -> (CloudPreset, int):
-        def get_random_preset() -> (CloudPreset, int):
+    def get_cloud_preset(self, weather: WeatherResponse) -> Tuple[CloudPreset, int]:
+        def get_random_preset() -> Tuple[CloudPreset, int]:
             preset_array = random.choice(list(self.cloud_mappings.values()))
             preset = random.choice(preset_array)
             return preset, numpy.random.randint(preset.min_base, preset.max_base)
 
-        cloud_mappings = self.cloud_mappings.values() if weather.info.name not in self.cloud_mappings else self.cloud_mappings[weather.info.name]
+        def get_mappings() -> list[Clouds]:
+            if weather.info.name not in self.cloud_mappings:
+                return list({x for value in self.cloud_mappings.values() for x in value})
+
+            return self.cloud_mappings[weather.info.name]
+
+        cloud_mappings = get_mappings()
         cloud_base = weather.main.calculate_cloud_base()
 
         chosen_preset: CloudPreset or None = None
