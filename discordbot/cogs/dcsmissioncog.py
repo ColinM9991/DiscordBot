@@ -1,19 +1,19 @@
 import discord
+import helpers.dcsserverrepository
+import helpers.dcsmissioneditor
+import helpers.services as services
+import weather.openmapweatherservice
 from discord.ext import commands
-
-from helpers import DcsServerRepository, DcsMissionEditor
-from helpers.services import dcs_server_repository, open_weather_map_service
-from weather import CityNotFoundError, OpenMapWeatherService
 
 
 class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
     def __init__(self,
                  bot,
-                 weather_service: OpenMapWeatherService,
-                 dcs_server: DcsServerRepository):
+                 weather_service: weather.openmapweatherservice.OpenMapWeatherService,
+                 dcs_server: helpers.dcsserverrepository.DcsServerRepository):
         self.bot = bot
-        self.weather_service: OpenMapWeatherService = weather_service
-        self.dcs_server: DcsServerRepository = dcs_server
+        self.weather_service: weather.openmapweatherservice.OpenMapWeatherService = weather_service
+        self.dcs_server: helpers.dcsserverrepository.DcsServerRepository = dcs_server
 
     @commands.command(help="Sets the weather to that of a specified city.")
     async def set_weather(self, ctx, instance_name, *, city):
@@ -30,13 +30,13 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
         try:
             weather = self.weather_service.get_weather_by_city(city)
-        except CityNotFoundError:
+        except weather.openmapweatherservice.CityNotFoundError:
             await ctx.send(f'"{city}" is not a valid city')
             return
 
         await ctx.send('Updating weather for the mission')
 
-        dcs_mission = DcsMissionEditor(mission)
+        dcs_mission = helpers.dcsserverrepository.DcsMissionEditor(mission)
         weather_result = dcs_mission.set_weather(weather)
 
         instance.stop()
@@ -59,5 +59,5 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
 def setup(bot):
     bot.add_cog(DcsMissionCog(bot,
-                              open_weather_map_service,
-                              dcs_server_repository))
+                              services.open_weather_map_service,
+                              services.dcs_server_repository))

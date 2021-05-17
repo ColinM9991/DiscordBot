@@ -1,8 +1,7 @@
 import datetime
 import requests
-
-from models import WeatherResponse
-from models.units import Pascal
+import models.units as units
+import models.weatherresponse
 
 
 class OpenMapWeatherService:
@@ -10,7 +9,7 @@ class OpenMapWeatherService:
         self.open_weather_map_url = open_weather_map_url
         self.open_weather_map_api_key = open_weather_map_api_key
 
-    def get_weather_by_city(self, city) -> WeatherResponse:
+    def get_weather_by_city(self, city) -> models.weatherresponse.WeatherResponse:
         """ Gets the weather for the specified city. """
         response = requests.get(self.open_weather_map_url, params={
             'q': city,
@@ -27,7 +26,7 @@ class OpenMapWeatherService:
 
     @staticmethod
     def create_response(weather_api_response):
-        return WeatherResponse(
+        return models.weatherresponse.WeatherResponse(
             weather_api_response['weather'][0]['main'],
             weather_api_response['weather'][0]['description'],
             weather_api_response['weather'][0]['icon'],
@@ -37,7 +36,8 @@ class OpenMapWeatherService:
             weather_api_response['wind']['speed'],
             weather_api_response['wind']['deg'],
             weather_api_response['main']['temp'],
-            Pascal.from_hectopascal(weather_api_response['main']['pressure']),
+            units.Pascal.from_hectopascal(
+                weather_api_response['main']['pressure']),
             weather_api_response['main']['humidity']
         )
 

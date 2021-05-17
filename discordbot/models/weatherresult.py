@@ -1,5 +1,5 @@
 from dcs.weather import Wind
-from models.units import InchOfMercury
+import models.units as units
 
 
 class WeatherResult:
@@ -7,7 +7,7 @@ class WeatherResult:
     preset_name: str
     temperature: int
     cloud_base: int
-    pressure: InchOfMercury
+    pressure: units.InchOfMercury
     wind_at_ground: Wind
     wind_at_2000: Wind
     wind_at_8000: Wind
@@ -17,7 +17,7 @@ class WeatherResult:
                  preset_name: str,
                  temperature: int,
                  cloud_base: int,
-                 pressure: InchOfMercury,
+                 pressure: units.InchOfMercury,
                  wind_at_ground: Wind,
                  wind_at_2000: Wind,
                  wind_at_8000: Wind):

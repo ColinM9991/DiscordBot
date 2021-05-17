@@ -1,14 +1,14 @@
 import discord
 from discord.ext import commands
 
-from helpers import DcsServerRepository
-from helpers.services import dcs_server_repository
+import helpers.dcsserverrepository
+import helpers.services as services
 
 
 class DcsServerCog(commands.Cog, name='DCS Server Commands'):
-    def __init__(self, bot, dcs_server: DcsServerRepository):
+    def __init__(self, bot, dcs_server: helpers.dcsserverrepository.DcsServerRepository):
         self.bot = bot
-        self.dcs_server: DcsServerRepository = dcs_server
+        self.dcs_server: helpers.dcsserverrepository.DcsServerRepository = dcs_server
 
     @commands.command(help='Retrieves the server information for a given instance')
     async def server_info(self, ctx, instance=None):
@@ -48,4 +48,4 @@ class DcsServerCog(commands.Cog, name='DCS Server Commands'):
 
 
 def setup(bot):
-    bot.add_cog(DcsServerCog(bot, dcs_server_repository))
+    bot.add_cog(DcsServerCog(bot, services.dcs_server_repository))

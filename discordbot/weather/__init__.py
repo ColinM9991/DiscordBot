@@ -1,2 +1,0 @@
-from .openmapweatherservice import OpenMapWeatherService
-from .openmapweatherservice import OpenWeatherMapError, CityNotFoundError

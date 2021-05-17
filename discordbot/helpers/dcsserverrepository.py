@@ -1,7 +1,6 @@
 import os
 import re
-
-from helpers import DcsServer
+import helpers.dcsserver
 
 
 class DcsServerRepository:
@@ -26,12 +25,12 @@ class DcsServerRepository:
             if not os.path.exists(instance_path):
                 continue
 
-            server = DcsServer(instance_name, instance_path, service_name)
+            server = helpers.dcsserver.DcsServer(instance_name, instance_path, service_name)
             dcs_server_instances[instance_name] = server
 
         self.instances = dcs_server_instances
 
-    def get_instance(self, instance_name) -> DcsServer:
+    def get_instance(self, instance_name) -> helpers.dcsserver.DcsServer:
         if instance_name not in self.instances:
             raise ValueError(f'{instance_name} is not a valid server instance')
 

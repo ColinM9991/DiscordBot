@@ -4,8 +4,9 @@ import numpy
 import random
 from dcs.cloud_presets import Clouds
 from dcs.weather import CloudPreset, Wind
-from models import WeatherResult, WeatherResponse
-from models.units import Torr
+import models.units as units
+import models.weatherresponse
+import models.weatherresult
 
 
 class DcsMissionEditor:
@@ -55,7 +56,7 @@ class DcsMissionEditor:
             ]
         }
 
-    def set_weather(self, weather: WeatherResponse):
+    def set_weather(self, weather: models.weatherresponse.WeatherResponse):
         speed = weather.wind.speed
         direction = weather.wind.direction
 
@@ -72,7 +73,7 @@ class DcsMissionEditor:
 
         (cloud_preset, cloud_base) = self.get_cloud_preset(weather)
 
-        pressure: Torr = weather.main.pressure.to_torr()
+        pressure: units.Torr = weather.main.pressure.to_torr()
 
         self.mission.weather.clouds_preset = cloud_preset
         self.mission.weather.clouds_base = cloud_base
@@ -81,7 +82,7 @@ class DcsMissionEditor:
             weather.main.temperature)
         self.mission.start_time = weather.time
 
-        return WeatherResult(self.mission.start_time,
+        return models.weatherresult.WeatherResult(self.mission.start_time,
                              cloud_preset.ui_name,
                              self.mission.weather.season_temperature,
                              cloud_base,
@@ -90,7 +91,7 @@ class DcsMissionEditor:
                              self.mission.weather.wind_at_2000,
                              self.mission.weather.wind_at_8000)
 
-    def get_cloud_preset(self, weather: WeatherResponse) -> Tuple[CloudPreset, int]:
+    def get_cloud_preset(self, weather: models.weatherresponse.WeatherResponse) -> Tuple[CloudPreset, int]:
         def get_random_preset() -> Tuple[CloudPreset, int]:
             preset_array = random.choice(list(self.cloud_mappings.values()))
             preset = random.choice(preset_array)

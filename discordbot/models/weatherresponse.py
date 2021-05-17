@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from models.units import PressureUnit
+import models.units as units
 import numpy
 
 
@@ -34,12 +34,12 @@ class WeatherResponse:
     @dataclass
     class Main:
         temperature: float
-        pressure: PressureUnit
+        pressure: units.PressureUnit
         humidity: int
 
         def __init__(self,
                      temperature: float,
-                     pressure: PressureUnit,
+                     pressure: units.PressureUnit,
                      humidity: int):
             self.temperature = temperature
             self.pressure = pressure
@@ -72,7 +72,7 @@ class WeatherResponse:
                  wind_speed: float,
                  wind_direction: float,
                  temperature: float,
-                 pressure: PressureUnit,
+                 pressure: units.PressureUnit,
                  humidity: int):
         self.time = time
         self.visibility = visibility

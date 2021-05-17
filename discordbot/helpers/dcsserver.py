@@ -1,11 +1,10 @@
-from models import DcsServerInfo
-from slpp import slpp as lua
-
+import models.dcsserverinfo
 import os
 import psutil as psutil
 import re
 import socket
 import subprocess
+from slpp import slpp as lua
 
 
 class DcsServer:
@@ -45,14 +44,15 @@ class DcsServer:
 
         return mission
 
-    def get_server_info(self) -> DcsServerInfo:
+    def get_server_info(self) -> models.dcsserverinfo.DcsServerInfo:
         config_dict = self.get_server_settings()
 
-        return DcsServerInfo(config_dict['name'],
-                             config_dict['password'],
-                             socket.gethostbyname(socket.gethostname()),
-                             config_dict['port'],
-                             self.is_running())
+        return models.dcsserverinfo.DcsServerInfo(config_dict['name'],
+                                                  config_dict['password'],
+                                                  socket.gethostbyname(
+                                                      socket.gethostname()),
+                                                  config_dict['port'],
+                                                  self.is_running())
 
     def is_running(self) -> bool:
         process_id = self.get_process_id()
