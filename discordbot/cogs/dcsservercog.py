@@ -42,7 +42,7 @@ class DcsServerCog(commands.Cog, name='DCS Server Commands'):
             .add_field(name='Name', value=server_info.server_name, inline=False)\
             .add_field(name='IP', value=server_info.ip_address, inline=True)\
             .add_field(name='Port', value=server_info.port, inline=True)\
-            .add_field(name='Status', value=('Online' if server_info.is_active else 'Offline'), inline=True)
+            .add_field(name='Password', value=server_info.password, inline=True)
 
         await ctx.send(embed=embed)
 

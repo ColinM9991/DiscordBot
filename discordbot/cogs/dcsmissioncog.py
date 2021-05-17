@@ -17,16 +17,10 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
     @commands.command(help="Sets the weather to that of a specified city.")
     async def set_weather(self, ctx, instance_name, *, city):
-        if instance_name is None:
-            await ctx.send('Command syntax: !set_weather <instance> <city>')
-            return
-
         instance = self.dcs_server.get_instance(instance_name)
         if instance is None:
             await ctx.send(f'{instance} is not a valid instance.')
             return
-
-        mission = instance.get_mission()
 
         try:
             weather = self.weather_service.get_weather_by_city(city)
@@ -36,12 +30,13 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
         await ctx.send('Updating weather for the mission')
 
+        mission = instance.get_mission()
         dcs_mission = helpers.dcsserverrepository.DcsMissionEditor(mission)
         weather_result = dcs_mission.set_weather(weather)
 
-        instance.stop()
+        self.dcs_server.stop(instance.get_instance_name)
         dcs_mission.save()
-        instance.start()
+        self.dcs_server.start(instance.get_instance_name)
 
         embed = discord.Embed(title='Mission Weather Updated')\
             .set_thumbnail(url=f'http://openweathermap.org/img/w/{weather.info.icon}.png')\

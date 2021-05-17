@@ -1,0 +1,7 @@
+firedaemon:
+  enabled: true
+  service_names:
+    training1: "DCS World"
+    training2: "DCS World Training"
+dcs:
+  profile_path: C:\Users\ColinM\Saved Games
