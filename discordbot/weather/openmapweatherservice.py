@@ -11,12 +11,15 @@ class OpenMapWeatherService:
         self.open_weather_map_api_key = open_weather_map_api_key
 
     def get_weather_by_city(self, city) -> WeatherResponse:
-        """ Gets the weather for the specified city. """
-        response = requests.get(self.open_weather_map_url, params={
-            'q': city,
-            'appid': self.open_weather_map_api_key,
-            'units': 'metric'
-        })
+        """Gets the weather for the specified city."""
+        response = requests.get(
+            self.open_weather_map_url,
+            params={
+                "q": city,
+                "appid": self.open_weather_map_api_key,
+                "units": "metric",
+            },
+        )
 
         if response.status_code == 404:
             raise CityNotFoundError
@@ -28,25 +31,29 @@ class OpenMapWeatherService:
     @staticmethod
     def create_response(weather_api_response):
         return WeatherResponse(
-            weather_api_response['weather'][0]['main'],
-            weather_api_response['weather'][0]['description'],
-            weather_api_response['weather'][0]['icon'],
-            (datetime.datetime.utcnow() +
-             datetime.timedelta(seconds=weather_api_response['timezone'])),
-            weather_api_response['visibility'],
-            weather_api_response['wind']['speed'],
-            weather_api_response['wind']['deg'],
-            weather_api_response['main']['temp'],
-            Pascal.from_hectopascal(weather_api_response['main']['pressure']),
-            weather_api_response['main']['humidity']
+            weather_api_response["weather"][0]["main"],
+            weather_api_response["weather"][0]["description"],
+            weather_api_response["weather"][0]["icon"],
+            (
+                datetime.datetime.utcnow()
+                + datetime.timedelta(seconds=weather_api_response["timezone"])
+            ),
+            weather_api_response["visibility"],
+            weather_api_response["wind"]["speed"],
+            weather_api_response["wind"]["deg"],
+            weather_api_response["main"]["temp"],
+            Pascal.from_hectopascal(weather_api_response["main"]["pressure"]),
+            weather_api_response["main"]["humidity"],
         )
 
 
 class OpenWeatherMapError(Exception):
-    """ Raised when an error occurs during the Open Weather Map API request """
+    """Raised when an error occurs during the Open Weather Map API request"""
+
     pass
 
 
 class CityNotFoundError(OpenWeatherMapError):
-    """ Raised when a requested city was not found by the Open Weather Map API """
+    """Raised when a requested city was not found by the Open Weather Map API"""
+
     pass

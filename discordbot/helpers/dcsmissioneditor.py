@@ -15,7 +15,7 @@ class DcsMissionEditor:
 
         self.mission = dcs_mission
         self.cloud_mappings = {
-            'Clear': [
+            "Clear": [
                 Clouds.LightScattered1,
                 Clouds.LightScattered2,
                 Clouds.HighScattered1,
@@ -29,7 +29,7 @@ class DcsMissionEditor:
                 Clouds.Scattered6,
                 Clouds.Scattered7,
             ],
-            'Clouds': [
+            "Clouds": [
                 Clouds.Broken1,
                 Clouds.Broken2,
                 Clouds.Broken3,
@@ -39,12 +39,12 @@ class DcsMissionEditor:
                 Clouds.Broken7,
                 Clouds.Broken8,
             ],
-            'Rain': [
+            "Rain": [
                 Clouds.OvercastAndRain1,
                 Clouds.OvercastAndRain2,
                 Clouds.OvercastAndRain3,
             ],
-            'Thunderstorm': [
+            "Thunderstorm": [
                 Clouds.Overcast1,
                 Clouds.Overcast2,
                 Clouds.Overcast3,
@@ -52,21 +52,27 @@ class DcsMissionEditor:
                 Clouds.Overcast5,
                 Clouds.Overcast6,
                 Clouds.Overcast7,
-            ]
+            ],
         }
 
     def set_weather(self, weather: WeatherResponse):
         speed = weather.wind.speed
         direction = weather.wind.direction
 
-        self.mission.weather.wind_at_8000 = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
-                                                 round(speed * numpy.random.normal(1.2, 0.1)))
+        self.mission.weather.wind_at_8000 = Wind(
+            round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
+            round(speed * numpy.random.normal(1.2, 0.1)),
+        )
 
-        self.mission.weather.wind_at_2000 = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
-                                                 round(speed * numpy.random.normal(1.1, 0.1)))
+        self.mission.weather.wind_at_2000 = Wind(
+            round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
+            round(speed * numpy.random.normal(1.1, 0.1)),
+        )
 
-        self.mission.weather.wind_at_ground = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
-                                                   round(speed * numpy.random.normal(1, 0.1)))
+        self.mission.weather.wind_at_ground = Wind(
+            round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
+            round(speed * numpy.random.normal(1, 0.1)),
+        )
 
         self.mission.weather.fog_visibility = weather.visibility
 
@@ -77,18 +83,19 @@ class DcsMissionEditor:
         self.mission.weather.clouds_preset = cloud_preset
         self.mission.weather.clouds_base = cloud_base
         self.mission.weather.qnh = round(pressure.value)
-        self.mission.weather.season_temperature = round(
-            weather.main.temperature)
+        self.mission.weather.season_temperature = round(weather.main.temperature)
         self.mission.start_time = weather.time
 
-        return WeatherResult(self.mission.start_time,
-                             cloud_preset.ui_name,
-                             self.mission.weather.season_temperature,
-                             cloud_base,
-                             pressure.to_inch_of_mercury(),
-                             self.mission.weather.wind_at_ground,
-                             self.mission.weather.wind_at_2000,
-                             self.mission.weather.wind_at_8000)
+        return WeatherResult(
+            self.mission.start_time,
+            cloud_preset.ui_name,
+            self.mission.weather.season_temperature,
+            cloud_base,
+            pressure.to_inch_of_mercury(),
+            self.mission.weather.wind_at_ground,
+            self.mission.weather.wind_at_2000,
+            self.mission.weather.wind_at_8000,
+        )
 
     def get_cloud_preset(self, weather: WeatherResponse) -> Tuple[CloudPreset, int]:
         def get_random_preset() -> Tuple[CloudPreset, int]:
@@ -98,7 +105,9 @@ class DcsMissionEditor:
 
         def get_mappings() -> list[Clouds]:
             if weather.info.name not in self.cloud_mappings:
-                return list({x for value in self.cloud_mappings.values() for x in value})
+                return list(
+                    {x for value in self.cloud_mappings.values() for x in value}
+                )
 
             return self.cloud_mappings[weather.info.name]
 
@@ -110,7 +119,10 @@ class DcsMissionEditor:
         for mapping in cloud_mappings:
             mapping_value = mapping.value
 
-            if mapping_value.min_base > cloud_base or mapping_value.max_base < cloud_base:
+            if (
+                mapping_value.min_base > cloud_base
+                or mapping_value.max_base < cloud_base
+            ):
                 continue
 
             if chosen_preset is None:
