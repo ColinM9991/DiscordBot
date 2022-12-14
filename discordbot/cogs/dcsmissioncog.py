@@ -1,7 +1,10 @@
+import dcs
+from dcs.weather import CloudPreset
 from discord.ext import commands
 from os import environ
 
 from helpers import DiscordRoles, OpenMapWeatherService, CityNotFoundError, DcsWeatherMapper
+from helpers.dcsmissioneditor import DcsMissionEditor
 
 
 class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
@@ -32,7 +35,12 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
         dcs_weather = self.dcs_weather_mapper.map(weather)
 
-        await ctx.send(dcs_weather)
+        mission_file = 'blank'
+        dcs_mission = DcsMissionEditor(mission_file)
+        weather_result = dcs_mission.set_weather(dcs_weather)
+        dcs_mission.save()
+
+        await ctx.send(f'Weather set to {weather_result.preset_name} with a pressure of {weather_result.pressure}')
 
 
 def setup(bot):
