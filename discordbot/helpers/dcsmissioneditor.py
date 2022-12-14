@@ -2,8 +2,8 @@ import dcs
 import numpy
 from dcs.cloud_presets import Clouds
 from dcs.weather import CloudPreset, Wind
-
-from helpers.units import Units
+from helpers import Units
+from models import WeatherResult
 
 
 class DcsMissionEditor:
@@ -105,23 +105,3 @@ class DcsMissionEditor:
 
     def save(self):
         self.mission.save()
-
-
-class WeatherResult:
-    time: str
-    preset_name: str
-    temperature: int
-    cloud_base: int
-    pressure: int
-
-    def __init__(self,
-                 time,
-                 preset_name: str,
-                 temperature: int,
-                 cloud_base: int,
-                 pressure: int):
-        self.time = time.strftime('%c')
-        self.preset_name = preset_name
-        self.temperature = temperature
-        self.cloud_base = cloud_base
-        self.pressure = "{:.2f}inHg".format(pressure * Units.mmHg_to_inHg)
