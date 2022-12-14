@@ -36,5 +36,5 @@ class DcsServerRepository:
 
         return self.instances[instance_name]
 
-    def get_instances(self):
+    def get_instance_names(self):
         return self.instances.keys()

@@ -1,6 +1,10 @@
+from models import DcsServerInfo
+from slpp import slpp as lua
+
 import os
 import psutil as psutil
 import re
+import socket
 import subprocess
 
 
@@ -13,6 +17,7 @@ class DcsServer:
         self.profile_path: str = instance_path
         self.service_name: str = service_name
         self.missions_path: str = os.path.join(instance_path, 'Missions')
+        self.config_path: str = os.path.join(instance_path, 'Config')
 
     @property
     def get_instance_name(self) -> str:
@@ -43,9 +48,22 @@ class DcsServer:
 
         return files[0]
 
+    def get_server_info(self) -> DcsServerInfo:
+        server_settings = os.path.join(self.config_path, 'serverSettings.lua')
+        with open(server_settings) as settings_file:
+            file_contents = settings_file.read()
+            server_settings_dict = lua.decode(f'{{{file_contents}}}')
+
+        config_dict = server_settings_dict['cfg']
+
+        return DcsServerInfo(config_dict['name'],
+                             config_dict['password'],
+                             socket.gethostbyname(socket.gethostname()),
+                             config_dict['port'],
+                             self.is_running())
+
     def is_running(self) -> bool:
         process_id = self.get_process_id()
-        print(f'Process ID is {process_id}')
 
         return process_id in (p.pid for p in psutil.process_iter())
 
