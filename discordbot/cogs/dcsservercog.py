@@ -1,6 +1,6 @@
 from discord.ext import commands
 from DcsServer import DcsServer
-from helpers.roles import DiscordRoles
+from helpers import DiscordRoles
 
 
 class DcsServerCog(commands.Cog, name="DCS Server Commands"):
@@ -8,12 +8,12 @@ class DcsServerCog(commands.Cog, name="DCS Server Commands"):
         self.bot = bot
         self.dcs_server = dcs_server
 
-    @commands.command(help="Restarts the DCS server")
+    @commands.command(help="Restarts the DCS server.")
     @commands.has_role(DiscordRoles.DCSServerAdministrator)
     async def restart_server(self, ctx):
         await ctx.send("{0} {1} {2}")
 
-    @commands.command(help="Checks the status of the DCS server")
+    @commands.command(help="Checks the status of the DCS server.")
     async def check_server(self, ctx):
         if self.dcs_server.is_running():
             await ctx.send('The server is currently running')
