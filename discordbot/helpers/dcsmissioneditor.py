@@ -1,7 +1,7 @@
 import dcs
 import numpy
 from dcs.cloud_presets import Clouds
-from dcs.weather import CloudPreset
+from dcs.weather import CloudPreset, Wind
 
 
 class DcsMissionEditor:
@@ -55,15 +55,16 @@ class DcsMissionEditor:
         speed = weather['wind']['speed']
         direction = weather['wind']['direction']
 
-        self.mission.weather.wind_at_8000.speed = speed * numpy.random.normal(1.2, 0.1)
-        self.mission.weather.wind_at_8000.direction = (direction * numpy.random.normal(1, 0.1) + 180) % 360
+        self.mission.weather.wind_at_8000.direction = Wind((direction * numpy.random.normal(1, 0.1) + 180) % 360,
+                                                           speed * numpy.random.normal(1.2, 0.1))
 
-        self.mission.weather.wind_at_2000.speed = speed * numpy.random.normal(1.1, 0.1)
-        self.mission.weather.wind_at_2000.direction = (direction * numpy.random.normal(1, 0.1) + 180) % 360
+        self.mission.weather.wind_at_2000.direction = Wind((direction * numpy.random.normal(1, 0.1) + 180) % 360,
+                                                           speed * numpy.random.normal(1.1, 0.1))
 
-        self.mission.weather.wind_at_ground.speed = speed * numpy.random.normal(1, 0.1)
-        self.mission.weather.wind_at_ground.direction = (direction * numpy.random.normal(1, 0.1) + 180) % 360
-        self.mission.weather.qnh = (weather['pressure'] * 0.02953)
+        self.mission.weather.wind_at_ground = Wind((direction * numpy.random.normal(1, 0.1) + 180) % 360,
+                                                   speed * numpy.random.normal(1, 0.1))
+
+        self.mission.weather.qnh = int((weather['pressure'] * 0.02953))
 
         self.mission.weather.fog_visibility = weather['visibility']
 
@@ -75,9 +76,9 @@ class DcsMissionEditor:
 
         return WeatherResult(cloud_preset.ui_name, self.mission.weather.qnh)
 
-    def get_cloud_preset(self, weatherstatus) -> CloudPreset:
-        if weatherstatus in self.cloud_mappings:
-            return numpy.random.choice(self.cloud_mappings[weatherstatus]).value
+    def get_cloud_preset(self, weather_status) -> CloudPreset:
+        if weather_status in self.cloud_mappings:
+            return numpy.random.choice(self.cloud_mappings[weather_status]).value
 
         return numpy.random.choice(self.cloud_mappings.values())
 
@@ -87,8 +88,10 @@ class DcsMissionEditor:
 
 class WeatherResult:
     preset_name: str
-    pressure: float
+    pressure: int
 
-    def __init__(self, preset_name: str, pressure: float):
+    def __init__(self,
+                 preset_name: str,
+                 pressure: int):
         self.preset_name = preset_name
         self.pressure = pressure
