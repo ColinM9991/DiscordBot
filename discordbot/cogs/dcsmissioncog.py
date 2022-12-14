@@ -45,11 +45,14 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
 
         embed = discord.Embed(title='Mission Weather Updated')\
             .set_thumbnail(url=f'http://openweathermap.org/img/w/{weather.info.icon}.png')\
-            .add_field(name='Date', value=weather_result.time)\
+            .add_field(name='Date', value=weather_result.time, inline=False)\
             .add_field(name='Clouds', value=weather_result.preset_name)\
             .add_field(name='Clouds Base', value='{:,}ft'.format(weather_result.cloud_base))\
             .add_field(name='Temperature', value=f'{weather_result.temperature}°C')\
             .add_field(name='Pressure', value="{:.2f}inHg".format(weather_result.pressure.value))\
+            .add_field(name='Wind at Ground', value=f'{weather_result.wind_at_ground.speed}kts at {weather_result.wind_at_ground.direction}°')\
+            .add_field(name='Wind at 2,000', value=f'{weather_result.wind_at_2000.speed}kts at {weather_result.wind_at_2000.direction}°')\
+            .add_field(name='Wind at 8,000', value=f'{weather_result.wind_at_8000.speed}kts at {weather_result.wind_at_8000.direction}°')\
 
         await ctx.send(embed=embed)
 
