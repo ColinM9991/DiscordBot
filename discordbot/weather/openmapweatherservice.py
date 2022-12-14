@@ -1,4 +1,8 @@
+import datetime
 import requests
+
+from models import WeatherResponse
+from models.units import Pascal
 
 
 class OpenMapWeatherService:
@@ -6,7 +10,7 @@ class OpenMapWeatherService:
         self.open_weather_map_url = open_weather_map_url
         self.open_weather_map_api_key = open_weather_map_api_key
 
-    def get_weather_by_city(self, city):
+    def get_weather_by_city(self, city) -> WeatherResponse:
         """ Gets the weather for the specified city. """
         response = requests.get(self.open_weather_map_url, params={
             'q': city,
@@ -17,9 +21,24 @@ class OpenMapWeatherService:
         if response.status_code == 404:
             raise CityNotFoundError
         elif response.status_code == 200:
-            return response.json()
+            return self.create_response(response.json())
         else:
             raise OpenWeatherMapError
+
+    @staticmethod
+    def create_response(weather_api_response):
+        return WeatherResponse(
+            weather_api_response['weather'][0]['main'],
+            weather_api_response['weather'][0]['description'],
+            weather_api_response['weather'][0]['icon'],
+            (datetime.datetime.utcnow() + datetime.timedelta(seconds=weather_api_response['timezone'])),
+            weather_api_response['visibility'],
+            weather_api_response['wind']['speed'],
+            weather_api_response['wind']['deg'],
+            weather_api_response['main']['temp'],
+            Pascal.from_hectopascal(weather_api_response['main']['pressure']),
+            weather_api_response['main']['humidity']
+        )
 
 
 class OpenWeatherMapError(Exception):

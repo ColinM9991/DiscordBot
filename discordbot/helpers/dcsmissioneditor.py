@@ -2,8 +2,8 @@ import dcs
 import numpy
 from dcs.cloud_presets import Clouds
 from dcs.weather import CloudPreset, Wind
-from helpers import Units
-from models import WeatherResult
+from models import WeatherResult, WeatherResponse
+from models.units import PressureUnit, Torr
 
 
 class DcsMissionEditor:
@@ -53,9 +53,9 @@ class DcsMissionEditor:
             ]
         }
 
-    def set_weather(self, weather):
-        speed = weather['wind']['speed']
-        direction = weather['wind']['direction']
+    def set_weather(self, weather: WeatherResponse):
+        speed = weather.wind.speed
+        direction = weather.wind.direction
 
         self.mission.weather.wind_at_8000 = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
                                                  round(speed * numpy.random.normal(1.2, 0.1)))
@@ -66,42 +66,54 @@ class DcsMissionEditor:
         self.mission.weather.wind_at_ground = Wind(round((direction * numpy.random.normal(1, 0.1) + 180) % 360),
                                                    round(speed * numpy.random.normal(1, 0.1)))
 
-        self.mission.weather.fog_visibility = weather['visibility']
+        self.mission.weather.fog_visibility = weather.visibility
 
-        cloud_preset = self.get_cloud_preset(weather['status']['name'])
-        cloud_base = self.calculate_cloud_base(weather['main'])
-        if cloud_base < cloud_preset.min_base or cloud_base > cloud_preset.max_base:
-            cloud_base = numpy.random.randint(cloud_preset.min_base, cloud_preset.max_base)
+        (cloud_preset, cloud_base) = self.get_cloud_preset(weather)
+
+        pressure: Torr = weather.main.pressure.to_torr()
 
         self.mission.weather.clouds_preset = cloud_preset
         self.mission.weather.clouds_base = cloud_base
-        self.mission.weather.qnh = round(weather['main']['pressure'] * Units.hPa_to_mmHg)
-        self.mission.weather.season_temperature = round(weather['main']['temperature'])
-        self.mission.start_time = weather['time']
+        self.mission.weather.qnh = round(pressure.value)
+        self.mission.weather.season_temperature = round(weather.main.temperature)
+        self.mission.start_time = weather.time
 
         return WeatherResult(self.mission.start_time,
                              cloud_preset.ui_name,
                              self.mission.weather.season_temperature,
-                             self.mission.weather.clouds_base,
-                             self.mission.weather.qnh)
+                             cloud_base,
+                             pressure.to_inch_of_mercury())
 
-    def get_cloud_preset(self, weather_status) -> CloudPreset:
-        if weather_status in self.cloud_mappings:
-            return numpy.random.choice(self.cloud_mappings[weather_status]).value
+    def get_cloud_preset(self, weather: WeatherResponse) -> (CloudPreset, int):
+        def get_random_preset() -> (CloudPreset, int):
+            preset = numpy.random.choice(self.cloud_mappings.values())
+            return preset, numpy.random.randint(preset.min_base, preset.max_base)
 
-        return numpy.random.choice(self.cloud_mappings.values())
+        cloud_mappings = self.cloud_mappings.values() if weather.info.name not in self.cloud_mappings else self.cloud_mappings[weather.info.name]
+        cloud_base = weather.main.calculate_cloud_base()
 
-    @staticmethod
-    def calculate_cloud_base(weather_main):
-        """ Calculates the cloud base using the Magnus formula """
-        humidity = weather_main['humidity']
-        temperature = weather_main['temperature']
-        alpha = 243.12
-        beta = 17.62
-        gamma = ((beta * temperature) / (alpha + temperature)) + numpy.log(humidity / 100)
-        ans = (alpha * gamma) / (beta - gamma)
-        spread = temperature - ans
-        return round((spread / 2.5) * 1000)
+        chosen_preset: CloudPreset or None = None
+
+        for mapping in cloud_mappings:
+            mapping_value = mapping.value
+
+            if mapping_value.min_base > cloud_base or mapping_value.max_base < cloud_base:
+                continue
+
+            if chosen_preset is None:
+                chosen_preset = mapping_value
+                continue
+
+            mapping_spread = mapping_value.max_base - mapping_value.min_base
+            chosen_spread = chosen_preset.max_base - chosen_preset.min_base
+
+            if abs(mapping_spread - cloud_base) < abs(chosen_spread - cloud_base):
+                chosen_preset = mapping_value
+
+        if chosen_preset is None:
+            return get_random_preset()
+
+        return chosen_preset, cloud_base
 
     def save(self):
         self.mission.save()

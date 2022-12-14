@@ -1,4 +1,4 @@
-from helpers import Units
+from models.units import InchOfMercury
 
 
 class WeatherResult:
@@ -6,16 +6,16 @@ class WeatherResult:
     preset_name: str
     temperature: int
     cloud_base: int
-    pressure: str
+    pressure: InchOfMercury
 
     def __init__(self,
                  time,
                  preset_name: str,
                  temperature: int,
                  cloud_base: int,
-                 pressure: int):
+                 pressure: InchOfMercury):
         self.time = time.strftime('%c')
         self.preset_name = preset_name
         self.temperature = temperature
         self.cloud_base = cloud_base
-        self.pressure = "{:.2f}inHg".format(pressure * Units.mmHg_to_inHg)
+        self.pressure = pressure
