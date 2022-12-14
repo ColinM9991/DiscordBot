@@ -1,5 +1,6 @@
 import dcs
 import numpy
+import random
 from dcs.cloud_presets import Clouds
 from dcs.weather import CloudPreset, Wind
 from models import WeatherResult, WeatherResponse
@@ -89,7 +90,8 @@ class DcsMissionEditor:
 
     def get_cloud_preset(self, weather: WeatherResponse) -> (CloudPreset, int):
         def get_random_preset() -> (CloudPreset, int):
-            preset = numpy.random.choice(self.cloud_mappings.values())
+            preset_array = random.choice(list(self.cloud_mappings.values()))
+            preset = random.choice(preset_array)
             return preset, numpy.random.randint(preset.min_base, preset.max_base)
 
         cloud_mappings = self.cloud_mappings.values() if weather.info.name not in self.cloud_mappings else self.cloud_mappings[weather.info.name]
