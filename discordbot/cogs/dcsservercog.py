@@ -1,6 +1,7 @@
 from discord.ext import commands
 from helpers import DcsServerRepository
-from os import environ
+
+from helpers.services import dcs_server_repository
 
 
 class DcsServerCog(commands.Cog, name="DCS Server Commands"):
@@ -29,6 +30,4 @@ class DcsServerCog(commands.Cog, name="DCS Server Commands"):
 
 
 def setup(bot):
-    bot.add_cog(DcsServerCog(bot, DcsServerRepository(
-                                  environ.get('DCS_PROFILE_PATH'),
-                                  environ.get('FIREDAEMON_CONFIG_PATH'))))
+    bot.add_cog(DcsServerCog(bot, dcs_server_repository))
