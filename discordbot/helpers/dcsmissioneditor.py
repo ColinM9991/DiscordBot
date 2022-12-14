@@ -75,10 +75,13 @@ class DcsMissionEditor:
         self.mission.weather.clouds_preset = cloud_preset
         self.mission.weather.clouds_base = numpy.random.randint(cloud_preset.min_base, cloud_preset.max_base)
 
+        self.mission.weather.season_temperature = round(weather['temperature'])
+
         self.mission.start_time = weather['time']
 
         return WeatherResult(self.mission.start_time,
                              cloud_preset.ui_name,
+                             self.mission.weather.season_temperature,
                              self.mission.weather.qnh)
 
     def get_cloud_preset(self, weather_status) -> CloudPreset:
@@ -94,13 +97,16 @@ class DcsMissionEditor:
 class WeatherResult:
     time: str
     preset_name: str
+    temperature: int
     pressure: str
 
     def __init__(self,
                  time,
                  preset_name: str,
+                 temperature: int,
                  pressure: int):
         self.time = time.strftime('%c')
         self.preset_name = preset_name
+        self.temperature = temperature
         # mmHg to inHg
         self.pressure = "{:.2f}inHg".format(pressure * Units.mmHg_to_inHg)

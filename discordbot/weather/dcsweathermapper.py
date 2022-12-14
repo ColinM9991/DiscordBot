@@ -13,7 +13,8 @@ class DcsWeatherMapper:
             },
             'status': {
                 'name': weather['weather'][0]['main'],
-                'description': weather['weather'][0]['description']
+                'description': weather['weather'][0]['description'],
+                'icon': weather['weather'][0]['icon']
             },
             'visibility': weather['visibility']
         }

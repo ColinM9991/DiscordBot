@@ -47,7 +47,14 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
         dcs_mission.save()
         instance.start()
 
-        await ctx.send(f'Weather set to {weather_result.time}, Clouds: {weather_result.preset_name} with a pressure of {weather_result.pressure}', embed=embed)
+        embed = discord.Embed(name='Mission Weather', description='Mission Weather Updated')\
+            .set_thumbnail(url=f'http://openweathermap.org/img/w/{dcs_weather["status"]["icon"]}.png')\
+            .add_field(name='Date', value=weather_result.time)\
+            .add_field(name='Clouds', value=weather_result.preset_name)\
+            .add_field(name='Temperature', value=f'{weather_result.temperature}°C')\
+            .add_field(name='Pressure', value=weather_result.pressure)\
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

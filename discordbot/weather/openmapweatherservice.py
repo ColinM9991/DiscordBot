@@ -10,7 +10,8 @@ class OpenMapWeatherService:
         """ Gets the weather for the specified city. """
         response = requests.get(self.open_weather_map_url, params={
             'q': city,
-            'appid': self.open_weather_map_api_key
+            'appid': self.open_weather_map_api_key,
+            'units': 'metric'
         })
 
         if response.status_code == 404:
