@@ -77,7 +77,8 @@ class DcsMissionEditor:
         self.mission.weather.clouds_preset = cloud_preset
         self.mission.weather.clouds_base = cloud_base
         self.mission.weather.qnh = round(pressure.value)
-        self.mission.weather.season_temperature = round(weather.main.temperature)
+        self.mission.weather.season_temperature = round(
+            weather.main.temperature)
         self.mission.start_time = weather.time
 
         return WeatherResult(self.mission.start_time,

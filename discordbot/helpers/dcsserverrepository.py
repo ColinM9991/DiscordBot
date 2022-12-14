@@ -16,7 +16,8 @@ class DcsServerRepository:
             file_path = os.path.join(fire_daemon_service_exports, file)
             with open(file_path) as file_contents:
                 contents = file_contents.read()
-                instance = re.search('<Parameters>(?:[A-Za-z0-9- ]+)&quot;([A-Za-z0-9.]+)&quot;</Parameters>', contents).group(1)
+                instance = re.search(
+                    '<Parameters>(?:[A-Za-z0-9- ]+)&quot;([A-Za-z0-9.]+)&quot;</Parameters>', contents).group(1)
 
                 instance_name = '.'.join(str(instance).split('.')[1:])
                 instance_path = os.path.join(profile_path, str(instance))
