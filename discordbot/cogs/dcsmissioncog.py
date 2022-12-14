@@ -1,4 +1,3 @@
-import dcs
 from discord.ext import commands
 from os import environ
 
@@ -6,7 +5,7 @@ from helpers import DiscordRoles, OpenMapWeatherService, CityNotFoundError, DcsW
 
 
 class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
-    weatherPresets = ['Preset{0}'.format(num) for num in range(1, 28)]
+    weatherPresets = [f'Preset{num}' for num in range(1, 28)]
 
     def __init__(self, bot, weather_service, dcs_weather_mapper):
         self.bot = bot
@@ -17,7 +16,7 @@ class DcsMissionCog(commands.Cog, name="DCS Mission Commands"):
     @commands.has_role(DiscordRoles.DCSServerAdministrator)
     async def set_clouds_preset(self, ctx, preset):
         if preset not in self.weatherPresets:
-            await ctx.send('{0} is not a valid preset selection.'.format(preset))
+            await ctx.send(f'{preset} is not a valid preset selection.')
             await ctx.send('Valid selections are {0}'.format(', '.join(self.weatherPresets)))
             return
 
