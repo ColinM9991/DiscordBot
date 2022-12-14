@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "discordbot",
+        "pydcs"
+    ]
+}
